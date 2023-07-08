@@ -1,21 +1,26 @@
-version: "3.8"
+version: '3.8'
 services:
-  springboot-app:
-    image: spring-sql
-    restart: always
-    build: .
-    ports:
-      - 8081:8080
-    depends_on:
-      - mysqldb
-
-  mysqldb:
-    container_name: mysqldb
+  mysql:
     image: mysql
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: test
     ports:
       - 3307:3306
+
+  spring-boot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 9090:8080
+    depends_on:
+      - mysql
     environment:
-      MYSQL_DATABASE: test
-      MYSQL_USER: root
-      MYSQL_PASSWORD: 1234
-      MYSQL_ROOT_PASSWORD: 1234
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test
+      SPRING_DATASOURCE_USERNAME: nsk
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_JPA_DATABASE-PLATFORM: org.hibernate.dialect.MySQL8Dialect
+
